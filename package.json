@@ -27,7 +27,7 @@
   "scripts": {
     "dev": "export NODE_ENV=dev && nodemon --exec ts-node --watch src ./src/server.ts",
     "build": "tsc --project ./",
-    "start": "export NODE_ENV=dev && node src/server.js",
+    "start": "export NODE_ENV=dev && node target/server.js",
     "test": "mocha -r ts-node/register test/**/*.spec.ts --timeout 1000"
   }
 }

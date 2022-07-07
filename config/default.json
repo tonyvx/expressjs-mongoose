@@ -1,0 +1,4 @@
+{
+  "DBHost": "mongodb://express:express@localhost:27017/express-db",
+  "sample": "mongodb://[username:password@]host1[:port1][,...hostN[:portN]][/[defaultauthdb][?options]]"
+}

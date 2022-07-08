@@ -1,26 +1,24 @@
 import express from 'express';
 
-import mongoose from 'mongoose';
-import morgan from 'morgan'
 import bodyParser from 'body-parser';
-import { indexRouter } from './routes/indexRouter';
-import { booksRouter } from './routes/booksRouter';
 import config from 'config';
+import morgan from 'morgan';
+import { getDBConnection } from './getDBConnection';
+import { booksRouter } from './routes/booksRouter';
+import { indexRouter } from './routes/indexRouter';
+import { validationMw } from './middleware/validateAndConvertDTO';
+import { BookDTO } from './models/bookDTO';
 
-// let config = require('config'); //we load the db location from the JSON files
-//db options
-let options = {
-  // server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }, 
-  // replset: { socketOptions: { keepAlive: 1, connectTimeoutMS : 30000 } } 
-};
+const middleware = (req: express.Request, _res: express.Response, next: express.NextFunction) => {
+  console.log('Request URL:', req.originalUrl);
+  next();
+}
 
 //db connection      
 let app = express();
-let port = 8081;
-console.log(config.get('DBHost'));
-mongoose.connect(config.get('DBHost'), options);
-let db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
+getDBConnection();
+
+// console.error.bind(console,'\x1b[0;31m%s\x1b[0m', 'connection error:')
 
 //don't show the log when it is test
 if (config.util.getEnv('NODE_ENV') !== 'test') {
@@ -35,9 +33,13 @@ app.use(bodyParser.text());
 app.use(bodyParser.json({ type: 'application/json' }));
 
 app.use('/', indexRouter);
-app.use('/book', booksRouter);
+app.use('/book',  booksRouter);
 
+const port = process.env.PORT||8081;
 app.listen(port);
+
 console.log("Listening on port " + port);
 
 export default app; // for testing
+
+

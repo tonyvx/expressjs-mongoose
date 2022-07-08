@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { CallbackWithoutResultAndOptionalError } from "mongoose";
 let Schema = mongoose.Schema;
 
 //book schema definition
@@ -8,6 +8,7 @@ let BookSchema = new Schema(
     author: { type: String, required: true },
     year: { type: Number, required: true },
     pages: { type: Number, required: true, min: 1 },
+    modifyAt: { type: Date, default: Date.now },
     createdAt: { type: Date, default: Date.now },
   },
   {
@@ -19,10 +20,10 @@ let BookSchema = new Schema(
 export const Book = mongoose.model('book', BookSchema);
 
 // Sets the createdAt parameter equal to the current time
-// BookSchema.pre('save', next => {
-//   const now = new Date();
-//   if (this && !this.createdAt) {
-//     this.createdAt = now;
-//   }
-//   next();
-// });
+BookSchema.pre('save', function (next) {
+  if (this && !this?.createdAt) {
+    this.createdAt = new Date(Date.now());
+  }
+  this.modifyAt = new Date(Date.now());
+  next();
+});

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { CallbackWithoutResult } from 'mongoose';
 import { Book } from '../models/book';
+import { BookDTO } from '../models/bookDTO';
 
 /*
  * GET /book route to retrieve all the books.
@@ -27,7 +28,7 @@ export const deleteBook = (req: Request, res: Response) =>
  * PUT /book/:id to updatea a book given its id
  */
 export const updateBook = (req: Request, res: Response) =>
-    Book.findById({ _id: req.params.id }, (err: any, book: null) => {
+    Book.findById({ _id: req.params.id }, (err: any, book: BookDTO) => {
         if (err) {
             res.status(400).send(err);
         } else if (!book) {
@@ -38,21 +39,21 @@ export const updateBook = (req: Request, res: Response) =>
     });
 
 
-    const mongooseCallBack = (res: Response, message: string): CallbackWithoutResult => (err: any) => {
-        if (err) {
-            res.status(500).send(err.message);
-        } else {
-            res.json({ message });
-        }
-    };
-    
-    const mongooseResponse = (res: Response, status: number) => <T>(err: any, books: T[] | T) => {
-        if (err) {
-            res.status(400).send(err.message);
-        } else if (!books) {
-            res.status(404).send("Not found");
-        } else {
-            //If no errors, send them back to the client
-            res.status(status).json(books);
-        }
+const mongooseCallBack = (res: Response, message: string): CallbackWithoutResult => (err: any) => {
+    if (err) {
+        res.status(500).send(err.message);
+    } else {
+        res.json({ message });
     }
+};
+
+const mongooseResponse = (res: Response, status: number) => <T>(err: any, books: T[] | T) => {
+    if (err) {
+        res.status(400).send(err.message);
+    } else if (!books) {
+        res.status(404).send("Not found");
+    } else {
+        //If no errors, send them back to the client
+        res.status(status).json(books);
+    }
+}
